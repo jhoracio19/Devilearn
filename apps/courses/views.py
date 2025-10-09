@@ -46,7 +46,34 @@ def course_list(request):
     })
 
 def course_detail(request):
-    pass
+    course = {
+        "course_title" : "Django: Crea aplicaciones robustas",
+        "course_link" : "",
+        "info_course" : {
+            "lessons" : 79,
+            "duration" : 8,
+            "instructor" : "Ricardo Cuellar",
+        },
+        "course_content" : [
+            {
+                'id': 1,
+                'name': "Introducción al curso",
+                'lessons' : [
+                    {
+                        'name': "Que aprenderas en este curso?",
+                        'type' : "video",
+                    },
+                    {
+                        'name': "Como usar la plataforma",
+                        'type' : "article"
+                    }
+                ]
+            }
+        ]
+    }
+    return render(request, "courses/course_detail.html", {
+        'course': course
+    })
 
 def course_lessons (request):
     pass
