@@ -48,7 +48,8 @@ def course_list(request):
 def course_detail(request):
     course = {
         "course_title" : "Django: Crea aplicaciones robustas",
-        "course_link" : "",
+        "course_link" : "course_lessons",
+        "course_image" : "images/curso_2.jpg",
         "info_course" : {
             "lessons" : 79,
             "duration" : 8,
@@ -76,4 +77,44 @@ def course_detail(request):
     })
 
 def course_lessons (request):
-    pass
+    lesson = {
+        "course_title" : "Django: Crea aplicaciones robustas",
+        "course_progress": 30,
+        "course_content" : [
+            {
+                'id': 1,
+                'name': "Introducción al curso",
+                'total_lessons' : 6,
+                'complete_lessons': 3,
+                'lessons' : [
+                    {
+                        'name': "Que aprenderas en este curso?",
+                        'type' : "video",
+                    },
+                    {
+                        'name': "Como usar la plataforma",
+                        'type' : "article"
+                    }
+                ]
+            },
+            {
+                'id': 2,
+                'name': "Fundamentos de python",
+                'total_lessons' : 27,
+                'complete_lessons': 6,
+                'lessons' : [
+                    {
+                        'name': "Que aprenderas en este curso?",
+                        'type' : "video",
+                    },
+                    {
+                        'name': "Como usar la plataforma",
+                        'type' : "article"
+                    }
+                ]
+            },
+        ]
+    }
+    return render(request, "courses/course_lessons.html",{
+        "lesson": lesson
+    })
