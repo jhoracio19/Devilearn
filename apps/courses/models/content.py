@@ -3,6 +3,7 @@ from .module import Module
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from ..fields import OrderField
 
 
 # CLASE PADRE
@@ -40,3 +41,4 @@ class Content(models.Model):
     })
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
+    order = OrderField(blank=True, for_fields = ['module'])
