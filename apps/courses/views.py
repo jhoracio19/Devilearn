@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models.course import Course
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -29,75 +29,21 @@ def course_list(request):
     })
 
 def course_detail(request, slug):
-    course = {
-        "course_title" : "Django: Crea aplicaciones robustas",
-        "course_link" : "course_lessons",
-        "course_image" : "images/curso_2.jpg",
-        "info_course" : {
-            "lessons" : 79,
-            "duration" : 8,
-            "instructor" : "Ricardo Cuellar",
-        },
-        "course_content" : [
-            {
-                'id': 1,
-                'name': "Introducción al curso",
-                'lessons' : [
-                    {
-                        'name': "Que aprenderas en este curso?",
-                        'type' : "video",
-                    },
-                    {
-                        'name': "Como usar la plataforma",
-                        'type' : "article"
-                    }
-                ]
-            }
-        ]
-    }
+    course = get_object_or_404(Course, slug=slug)
+    modules = course.modules.prefetch_related('contents')
+    total_contents = sum(module.contents.count() for module in modules)
+    
     return render(request, "courses/course_detail.html", {
-        'course': course
+        'course': course,
+        'modules': modules,
+        'total_contents': total_contents
     })
 
-def course_lessons (request):
-    lesson = {
-        "course_title" : "Django: Crea aplicaciones robustas",
-        "course_progress": 30,
-        "course_content" : [
-            {
-                'id': 1,
-                'name': "Introducción al curso",
-                'total_lessons' : 6,
-                'complete_lessons': 3,
-                'lessons' : [
-                    {
-                        'name': "Que aprenderas en este curso?",
-                        'type' : "video",
-                    },
-                    {
-                        'name': "Como usar la plataforma",
-                        'type' : "article"
-                    }
-                ]
-            },
-            {
-                'id': 2,
-                'name': "Fundamentos de python",
-                'total_lessons' : 27,
-                'complete_lessons': 6,
-                'lessons' : [
-                    {
-                        'name': "Que aprenderas en este curso?",
-                        'type' : "video",
-                    },
-                    {
-                        'name': "Como usar la plataforma",
-                        'type' : "article"
-                    }
-                ]
-            },
-        ]
-    }
+def course_lessons (request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    course_title = course.title
+    modules = course.modules.prefetch_related('contents')
     return render(request, "courses/course_lessons.html",{
-        "lesson": lesson
+        "course_title": course_title,
+        'modules': modules
     })
