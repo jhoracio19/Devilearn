@@ -1,51 +1,34 @@
 from django.shortcuts import render
-
+from .models.course import Course
+from django.db.models import Q
+from django.core.paginator import Paginator
 # Create your views here.
 
 def course_list(request):
-    # courses = [
-    #     {
-    #         'id': 1,
-    #         'level' : 'Principiante',
-    #         'rating' : 4.8,
-    #         'course_title' : 'Python: fundamento hasta los detalles',
-    #         'instructor' : 'Alison Walsh',
-    #         'course_image' : 'images/curso_1.jpg',
-    #         'instructor_image' : 'https://randomuser.me/api/portraits/women/68.jpg'
-    #     },
-    #     {
-    #         'id': 2,
-    #         'level' : 'Intermedio',
-    #         'rating' : 5,
-    #         'course_title' : 'Django: crea aplicaciones robustas',
-    #         'instructor' : 'Patty Kutch',
-    #         'course_image' : 'images/curso_2.jpg',
-    #         'instructor_image' : 'https://randomuser.me/api/portraits/women/20.jpg'
-    #     },
-    #     {
-    #         'id': 3,
-    #         'level' : 'Principiante',
-    #         'rating' : 4.9,
-    #         'course_title' : 'Django: avanzado',
-    #         'instructor' : 'Alonzo Murray',
-    #         'course_image' : 'images/curso_3.jpg',
-    #         'instructor_image' : 'https://randomuser.me/api/portraits/men/32.jpg'
-    #     },
-    #     {
-    #         'id': 4,
-    #         'level' : 'Avanzado',
-    #         'rating' : 4.9,
-    #         'course_title' : 'FastAPI: avanzado',
-    #         'instructor' : 'Gregory Harris',
-    #         'course_image' : 'images/curso_4.jpg',
-    #         'instructor_image' : 'https://randomuser.me/api/portraits/men/45.jpg'
-    #     },
-    # ]
+    courses = Course.objects.all()
+    query = request.GET.get("q")
+    
+    if query:
+        courses = courses.filter(
+            Q(title__icontains=query) | Q(owner__first_name__icontains=query)
+        )
+    
+    paginator = Paginator(courses, 8)
+    page_number = request.GET.get('page')
+    courses_obj = paginator.get_page(page_number)
+    
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        query_params.pop('page')
+    query_string = query_params.urlencode()
+    
     return render(request, "courses/courses.html", {
-        'courses' : courses
+        'courses_obj' : courses_obj,
+        'query': query,
+        'query_string': query_string
     })
 
-def course_detail(request):
+def course_detail(request, slug):
     course = {
         "course_title" : "Django: Crea aplicaciones robustas",
         "course_link" : "course_lessons",
